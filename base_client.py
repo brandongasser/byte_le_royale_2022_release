@@ -69,12 +69,13 @@ class Client(UserClient):
         if (index >= 0):
             opponent = things[index]
             if (distance(opponent.hitbox.middle[0], opponent.hitbox.middle[1], shooter.hitbox.middle[0], shooter.hitbox.middle[1]) <= 30):
-                actions.set_shoot(heading = angle_to_point(shooter, opponent.hitbox.middle))
+                actions.set_shoot(angle_to_point(shooter, opponent.hitbox.middle))
+
+    def reload(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
+        if shooter.primary_gun.mag_ammo == 0:
+            actions.set_action(ActionType.reload)
 
     def take_turn(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
-        self.shoot(turn, actions, game_board, partition_grid, shooter)
         self.movement(turn, actions, game_board, partition_grid, shooter)
-        walls = self.only_walls(list(partition_grid.get_all_objects()))
-        print("\n\nturn %d:" % (turn))
-        for wall in walls:
-            print(type(wall))
+        self.shoot(turn, actions, game_board, partition_grid, shooter)
+        self.reload(turn, actions, game_board, partition_grid, shooter)
