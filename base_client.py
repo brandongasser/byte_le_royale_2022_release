@@ -19,14 +19,6 @@ class Client(UserClient):
     def team_name(self):
         return 'Java'
 
-    
-    def find_opponent(self, things: list, me: Shooter) -> int:
-        i = 0
-        for thing in things:
-            if (type(thing) == Shooter and me.hitbox.middle != thing.hitbox.middle):
-                return i
-            i += 1
-        return -1
 
     def movement(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         # This is the list that contains all the objects on the map your player can see
@@ -45,6 +37,23 @@ class Client(UserClient):
                 and self.prev_location != game_board.center:
             #shooter.heading = 0
             actions.set_move((shooter.heading + 90) % 360, 10)
+
+    def find_opponent(self, things: list, me: Shooter) -> int:
+        i = 0
+        for thing in things:
+            if thing.object_type == ObjectType.shooter and me.hitbox.middle != thing.hitbox.middle:
+                return i
+            i += 1
+        return -1
+
+    def find_nearest_money(self, things: list, me: Shooter) -> int:
+        i = 0
+        nearest = -1
+        for thing in things:
+            if (thing.object_type == ObjectType.money and (nearest == -1 or distance(me.hitbox.middle[0], me.hitbox.middle[1], thing.hitbox.middle[0], thing.hitbox.middle[1]) < distance(me.hitbox.middle[0], me.hitbox.middle[1], things[nearest].hitbox.middle[0], things[nearest].hitbox.middle[1]))):
+                nearest = i
+            i += 1
+        return nearest
 
     def shoot(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         things = list(partition_grid.get_all_objects())
