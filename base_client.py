@@ -55,6 +55,14 @@ class Client(UserClient):
             i += 1
         return nearest
 
+    def only_walls(self, things: list) -> list:
+        walls = []
+        for thing in things:
+            if thing.object_type == ObjectType.wall:
+                walls.append(thing)
+        return walls
+
+
     def shoot(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         things = list(partition_grid.get_all_objects())
         index = self.find_opponent(things, shooter)
@@ -66,3 +74,7 @@ class Client(UserClient):
     def take_turn(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         self.shoot(turn, actions, game_board, partition_grid, shooter)
         self.movement(turn, actions, game_board, partition_grid, shooter)
+        walls = self.only_walls(list(partition_grid.get_all_objects()))
+        print("\n\nturn %d:" % (turn))
+        for wall in walls:
+            print(type(wall))
