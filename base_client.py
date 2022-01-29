@@ -62,13 +62,28 @@ class Client(UserClient):
                 walls.append(thing)
         return walls
 
+    def only_guns(self, things: list) -> list:
+        guns = []
+        for thing in things:
+            if thing.object_type == ObjectType.gun:
+                guns.append(thing)
+        return guns
+
+    def find_nearest_gun(self, guns: list, type: GunType, me: Shooter) -> int:
+        nearest = -1
+        i = 0
+        for gun in guns:
+            if gun.gun_type == type and (nearest == -1 or distance(me.hitbox.middle[0], me.hitbox.middle[1], gun.hitbox.middle[0], gun.hitbox.middle[1]) < distance(me.hitbox.middle[0], me.hitbox.middle[1], guns[i].hitbox.middle[0], guns[i].hitbox.middle[1])):
+                nearest = i
+            i += 1
+        return nearest
 
     def shoot(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         things = list(partition_grid.get_all_objects())
         index = self.find_opponent(things, shooter)
         if (index >= 0):
             opponent = things[index]
-            if (distance(opponent.hitbox.middle[0], opponent.hitbox.middle[1], shooter.hitbox.middle[0], shooter.hitbox.middle[1]) <= 30):
+            if (distance(opponent.hitbox.middle[0], opponent.hitbox.middle[1], shooter.hitbox.middle[0], shooter.hitbox.middle[1]) <= shooter.primary_gun.range):
                 actions.set_shoot(angle_to_point(shooter, opponent.hitbox.middle))
 
     def reload(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
@@ -79,3 +94,5 @@ class Client(UserClient):
         self.movement(turn, actions, game_board, partition_grid, shooter)
         self.shoot(turn, actions, game_board, partition_grid, shooter)
         self.reload(turn, actions, game_board, partition_grid, shooter)
+        guns = self.only_guns(list(partition_grid.get_all_objects()))
+        nearest = self.find_nearest_gun(guns, GunType.assault_rifle, shooter)
