@@ -95,4 +95,7 @@ class Client(UserClient):
         self.shoot(turn, actions, game_board, partition_grid, shooter)
         self.reload(turn, actions, game_board, partition_grid, shooter)
         guns = self.only_guns(list(partition_grid.get_all_objects()))
-        nearest = self.find_nearest_gun(guns, GunType.assault_rifle, shooter)
+        nearest_ar = self.find_nearest_gun(guns, GunType.assault_rifle, shooter)
+        if nearest_ar != -1 and check_collision(guns[nearest_ar].hitbox, shooter.hitbox):
+            print("\nturn: %d\npicked up ar" % (turn))
+            actions.set_action(ActionType.interact)
