@@ -51,7 +51,8 @@ class Client(UserClient):
         index = self.find_player(things, shooter)
         if (index >= 0):
             opponent = things[index]
-            actions.set_shoot(heading = player_utils.angle_to_point(shooter, opponent.hitbox.middle))
+            if (distance(opponent.hitbox.middle[0], opponent.hitbox.middle[1], shooter.hitbox.middle[0], shooter.hitbox.middle[1]) <= 30):
+                actions.set_shoot(heading = angle_to_point(shooter, opponent.hitbox.middle))
 
     def take_turn(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         self.shoot(turn, actions, game_board, partition_grid, shooter)
