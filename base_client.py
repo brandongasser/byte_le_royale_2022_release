@@ -28,11 +28,13 @@ class Client(UserClient):
             i += 1
         return -1
 
-    def take_turn(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
+    def shoot(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         things = list(partition_grid.get_all_objects())
         index = self.find_player(things, shooter)
         if (index >= 0):
             opponent = things[index]
             actions.set_shoot(heading = player_utils.angle_to_point(shooter, opponent.hitbox.middle))
         print("\nturn %d:\nplayer index: %d\nopponent: %s\n\n\n" % (turn, index, things[index] if index >= 0 else "no opponent found"))
-        return
+
+    def take_turn(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
+        shoot(self, turn, actions, game_board, partition_grid, shooter)
