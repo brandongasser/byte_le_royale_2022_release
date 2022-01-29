@@ -37,4 +37,4 @@ class Client(UserClient):
         print("\nturn %d:\nplayer index: %d\nopponent: %s\n\n\n" % (turn, index, things[index] if index >= 0 else "no opponent found"))
 
     def take_turn(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
-        shoot(self, turn, actions, game_board, partition_grid, shooter)
+        shoot(turn, actions, game_board, partition_grid, shooter)
