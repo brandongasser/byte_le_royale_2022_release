@@ -20,7 +20,7 @@ class Client(UserClient):
         return 'Java'
 
     
-    def find_player(self, things: list, me: Shooter) -> int:
+    def find_opponent(self, things: list, me: Shooter) -> int:
         i = 0
         for thing in things:
             if (type(thing) == Shooter and me.hitbox.middle != thing.hitbox.middle):
@@ -48,7 +48,7 @@ class Client(UserClient):
 
     def shoot(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         things = list(partition_grid.get_all_objects())
-        index = self.find_player(things, shooter)
+        index = self.find_opponent(things, shooter)
         if (index >= 0):
             opponent = things[index]
             if (distance(opponent.hitbox.middle[0], opponent.hitbox.middle[1], shooter.hitbox.middle[0], shooter.hitbox.middle[1]) <= 30):
