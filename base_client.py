@@ -38,67 +38,6 @@ class Client(UserClient):
     #         #shooter.heading = 0
     #         actions.set_move((shooter.heading + 90) % 360, 10)
 
-    # def get_pathfind_list(self, x, y, shooter: Shooter, game_board, partition_grid: PartitionGrid) -> list:
-    #     #temp_point = (x, y)
-    #     count = 0
-    #     final_path = [] #array of the final path to travel, in order
-    #     #while (not (shooter.hitbox.middle in final_path)):
-    #     temp = False
-    #     main = []
-    #     while(not(shooter.hitbox.middle in final_path)):
-    #         main = [game_board.center[0], game_board.center[1],0]
-    #         adjacent_cells_list = [(x-partition_grid.partition_width, y, count), (x+partition_grid.partition_width, y, count), (x, y-partition_grid.partition_width, count), (x, y+partition_grid.partition_width, count)]
-    #         walls = [[(self.only_walls(list(partition_grid.get_all_objects())))[0].hitbox.top_left, (self.only_walls(list(partition_grid.get_all_objects())))[0].hitbox.top_right, (self.only_walls(list(partition_grid.get_all_objects())))[0].hitbox.bottom_left, (self.only_walls(list(partition_grid.get_all_objects())))[0].hitbox.bottom_right]]
-    #         #walls is an array of arrays of top left, top right, bottom left, and bottom right coordinates of walls
-    #         for i in range(1,len(self.only_walls(list(partition_grid.get_all_objects())))):
-    #             walls.append([self.only_walls(list(partition_grid.get_all_objects()))[i].hitbox.top_left, self.only_walls(list(partition_grid.get_all_objects()))[i].hitbox.top_right, self.only_walls(list(partition_grid.get_all_objects()))[i].hitbox.bottom_left, self.only_walls(list(partition_grid.get_all_objects()))[i].hitbox.bottom_right])
-    #         for i in range(len(adjacent_cells_list)):
-    #             for m in range(len(walls)):
-    #                 if ((int(adjacent_cells_list[i][0])>int(walls[m][0][0]) and int(adjacent_cells_list[i][0])<int(walls[m][1][0])) or (int(adjacent_cells_list[i][1])>int(walls[m][2][1]) and int(adjacent_cells_list[i][1])<int(walls[m][0][1]))):
-    #                     adjacent_cells_list.remove(adjacent_cells_list[i])
-    #                     #remove cells that are inside of walls from available adjacent cells
-    #                 if(adjacent_cells_list[i] in main):
-    #                     main.remove(adjacent_cells_list[i])
-    #                     #remove cells that are already in main from main
-    #         adjacent_cells_list = []
-    #         count += 1
-    #         main.append(adjacent_cells_list)
-
-    #     current_position = shooter.hitbox.middle
-    #     #final_path = [] #array of the final path to travel, in order
-    #     for i in range(len(main)):
-    #         adjacent_options = []
-    #         #if adjacent cell is one of the ones I can move to (if it's in main) add it to a list of options
-    #         if([current_position[0]-partition_grid.partition_width, current_position[1], count] == main[i]):
-    #             adjacent_options.append(main[i])
-    #         if([current_position[0]+partition_grid.partition_width, current_position[1], count] == main[i]):
-    #             adjacent_options.append(main[i])
-    #         if([current_position[0], current_position[1]-partition_grid.partition_width, count] == main[i]):
-    #             adjacent_options.append(main[i])
-    #         if([current_position[0], current_position[1]+partition_grid.partition_width, count] == main[i]):
-    #             adjacent_options.append(main[i])
-    #         next_position = adjacent_options[0] #initialize next position to the first option, then iterate through the list of options
-    #         for m in range(len(adjacent_options)):
-    #             if (adjacent_options[m][2]<int(next_position[2])): #if the count variable is lower, set next_position equal to that cell
-    #                 next_position = adjacent_options[m]
-    #         final_path[i] = next_position #add the next position to the final path array
-    #         count-=1 #decrement count (because we're now working in the opposite direction, from the player to the target location)
-    #     final_path.reverse()
-    #     print(final_path)
-    #     return final_path
-
-    # def move(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
-    #     destination = game_board.center
-    #     path = self.get_pathfind_list(destination[0], destination[1], shooter, game_board, partition_grid)
-    #     if(self.move_index<len(path)-2):
-    #         angle = angle_to_point(shooter, path[self.move_index])
-    #         #angle = angle_to_point(path[self.move_index][0], path[self.move_index+1][1])
-    #     else: angle = angle_to_point(shooter, destination)
-    #         #angle = angle_to_point(((path[self.move_index])[0], (path[self.move_index])[1]), destination)
-    #     #angle = self.angle_to_point(path[self.move_index], path[self.move_index+1]) if (self.move_index+1<len(path)) else angle_to_point(path[self.move_index], destination)
-    #     actions.set_move(int(angle), shooter.max_speed)
-    #     self.move_index+=1
-
     def find_opponent(self, things: list, me: Shooter) -> int:
         i = 0
         for thing in things:
@@ -132,23 +71,23 @@ class Client(UserClient):
 
     def is_in_wall(self, pos_x: int, pos_y: int, walls: list) -> bool:
         pos = (pos_x, pos_y)
-        walls_corners_list = [[walls[0].hitbox.top_left, walls[0].hitbox.top_right, walls[0].hitbox.bottom_left, walls[0].hitbox.bottom_right]] #array of arrays of duples
-        for i in range(1, len(walls)):
-            walls_corners_list.append([walls[i].hitbox.top_left, walls[i].hitbox.top_right, walls[i].hitbox.bottom_left, walls[i].hitbox.bottom_right])
+        walls_corners_list = [] #array of arrays [left, right, top, bottom]
         for i in range(len(walls)):
-            if((pos[0] > int(walls_corners_list[i][0][0]) and pos[0] < int(walls_corners_list[i][1][0])) or (pos[1] > int(walls_corners_list[i][2][1]) and  pos[1] < int(walls_corners_list[i][0][1]))):
+            walls_corners_list.append([walls[i].hitbox.top_left[0], walls[i].hitbox.top_right[0], walls[i].hitbox.top_right[1], walls[i].hitbox.bottom_left[1]])
+        for i in range(len(walls)):
+            if((pos[0] > int(walls_corners_list[i][1]) and pos[0] < int(walls_corners_list[i][0])) or (pos[1] < int(walls_corners_list[i][2]) and pos[1] > int(walls_corners_list[i][3]))):
                 return True
-        return False            
+        return False
 
     def find_next_move(self, target_x: int, target_y: int, me: Shooter, walls: list):
         target = (target_x, target_y)
         current_pos = me.hitbox.middle
-        next_pos = me.hitbox.middle
-        for i in range(-1, 1):
-            for j in range(-1, 1):
+        next_pos = (0, 0)
+        for i in [-1, 0, 1]:
+            for j in [-1, 0, 1]:
                 if not (i == 0 and j == 0):
-                    test_pos = (current_pos[0] + (i * me.max_speed / 2), current_pos[1] + (j * me.max_speed / 2))
-                    if not self.is_in_wall(*test_pos, walls) and distance(next_pos[0], next_pos[1], target[0], target[1]) > distance(test_pos[0], test_pos[1], target[0], target[1]):
+                    test_pos = (int(current_pos[0] - (i * me.max_speed / 1.5)), int(current_pos[1] - (j * me.max_speed / 1.5)))
+                    if (not self.is_in_wall(*test_pos, walls)) and distance(*test_pos, *target) < distance(*next_pos, *target):
                         next_pos = test_pos
         return next_pos
 
@@ -156,7 +95,7 @@ class Client(UserClient):
         target = (target_x, target_y)
         walls = self.only_walls(list(partition_grid.get_all_objects()))
         next_move = self.find_next_move(*target, shooter, walls)
-        actions.set_move(int(angle_to_point(shooter, next_move)), shooter.max_speed / 2)
+        actions.set_move(int(angle_to_point(shooter, next_move)), int(shooter.max_speed))
 
     def shoot(self, turn, actions: Action, game_board, partition_grid: PartitionGrid, shooter: Shooter) -> None:
         things = list(partition_grid.get_all_objects())
@@ -174,4 +113,3 @@ class Client(UserClient):
         self.move(turn, actions, game_board, partition_grid, shooter, *game_board.center)
         self.shoot(turn, actions, game_board, partition_grid, shooter)
         self.reload(turn, actions, game_board, partition_grid, shooter)
-        return
